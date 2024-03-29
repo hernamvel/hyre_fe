@@ -1,25 +1,45 @@
 import logo from './logo.svg';
 import './App.css';
+import './components/InputPanel';
+import InputPanel from "./components/InputPanel";
+import {useState} from "react";
+import ResultsPanel from "./components/ResultsPanel";
+import axios from "axios";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [results, setResults] = useState([]);
+
+    function handleCallback(searchWord) {
+        let url;
+        if (searchWord === "") {
+            url = `http://localhost:3000/dictionary/endpoint2`
+        } else {
+            url = `http://localhost:3000/dictionary/endpoint1?word=${searchWord}`
+        }
+        axios.get(url)
+            .then((response) => {
+                setResults(response.data.words)
+            }, (error) => {
+                console.log(error);
+            });
+    }
+
+    return (
+        <div className="App">
+            <header className="App-header">
+            <div>
+                <InputPanel
+                    parentCallback={handleCallback}
+                />
+                </div>
+                <div>
+                    <ResultsPanel
+                        resultList={results}
+                    />
+                </div>
+            </header>
+        </div>
+    );
 }
 
 export default App;
